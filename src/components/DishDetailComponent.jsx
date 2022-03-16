@@ -9,6 +9,7 @@ import {
 } from "reactstrap";
 
 function RenderComments({ comments }) {
+  console.log("Comments");
   if (comments != null) {
     return (
       <div>
@@ -16,7 +17,7 @@ function RenderComments({ comments }) {
         <ul className="list-unstyled">
           {comments.map((comment) => {
             return (
-              <comment key={comment.id}>
+              <div key={comment.id}>
                 {comment.comment}
                 <h6>
                   --{comment.author},{" "}
@@ -26,7 +27,7 @@ function RenderComments({ comments }) {
                     day: "2-digit",
                   }).format(new Date(Date.parse(comment.date)))}
                 </h6>
-              </comment>
+              </div>
             );
           })}
         </ul>
@@ -38,6 +39,7 @@ function RenderComments({ comments }) {
 }
 
 function RenderDish({ dish }) {
+  console.log("Dish");
   return (
     <Card>
       <CardImg width="100%" src={dish.image} alt={dish.name} />
@@ -49,15 +51,16 @@ function RenderDish({ dish }) {
   );
 }
 function DishDetail(props) {
-  let selectedDish = props.selectedDish;
+  console.log("Hello");
+  let selectedDish = props.dish;
   if (selectedDish != null) {
     return (
       <div className="row">
         <div className="col-12 col-md-5 m-1">
-          <RenderDish dish={props.dish} />
+          <RenderDish dish={selectedDish} />
         </div>
         <div className="col-12 col-md-5 m-1">
-          <RenderComments comments={props.comments} />
+          <RenderComments comments={selectedDish.comments} />
         </div>
       </div>
     );
