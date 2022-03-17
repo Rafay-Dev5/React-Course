@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { Navbar, NavbarBrand } from "reactstrap";
 import Menu from "./MenuComponent";
 import DishDetail from "./DishDetailComponent";
+import Header from "./HeaderComment";
+import Footer from "./FooterComponent";
 import { DISHES } from "../shared/dishes";
+import Home from "./HomeComponent";
+import { Routes, Route, Navigate } from "react-router-dom";
 //import logo from "./logo.svg";
 //import "./App.css";
 
@@ -22,15 +25,14 @@ class Main extends Component {
   }
 
   render() {
+    const HomePage = () => {
+      return <Home />;
+    };
     return (
       <div className="App">
-        <Navbar dark color="primary">
-          <div className="container">
-            <NavbarBrand href="/">Brand Name</NavbarBrand>
-            {/* NavbarBrand is for the brandname at the top left */}
-          </div>
-        </Navbar>
-        <Menu
+        <Header />
+        <Routes>
+          {/* <Menu
           dishes={this.state.dishes}
           onClick={(dishID) => this.onDishSelect(dishID)}
         />
@@ -40,7 +42,21 @@ class Main extends Component {
               (dish) => dish.id === this.state.selectedDish
             )[0]
           }
-        />
+        /> */}
+          <Route path="/home" element={<HomePage />} />
+          <Route
+            exact
+            path="/menu"
+            element={
+              <Menu
+                dishes={this.state.dishes}
+                onClick={(dishID) => this.onDishSelect(dishID)}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/home" />} />
+        </Routes>
+        <Footer />
       </div>
     );
   }
