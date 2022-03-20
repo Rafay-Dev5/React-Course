@@ -17,6 +17,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { Loading } from "./LoadingComponent";
 
 function CommentForm(props) {
   return (
@@ -39,7 +40,7 @@ function RenderDish({ dish }) {
   );
 }
 
-function RenderComments({ comments, toggleModal }) {
+function RenderComments({ comments, toggleModal, addComment, dishId }) {
   console.log("Comments");
   if (comments != null) {
     return (
@@ -62,7 +63,11 @@ function RenderComments({ comments, toggleModal }) {
             );
           })}
         </ul>
-        <CommentForm toggleModal={toggleModal} />
+        <CommentForm
+          toggleModal={toggleModal}
+          dishId={dishId}
+          addComment={addComment}
+        />
       </div>
     );
   } else {
@@ -80,11 +85,40 @@ class DishDetail extends Component {
       isModalOpen: false,
     };
     this.toggleModal = this.toggleModal.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
     // this.required = this.required.bind(this);
     // this.maxLength = this.maxLength.bind(this);
     // this.minLength = this.minLength.bind(this);
   }
 
+  handleLogin(values) {
+    this.toggleModal();
+    if (!values.rating) {
+      const copyValues = Object.create(values);
+      //Copy
+      this.state.props.addComment(
+        this.state.props.dish.id,
+        copyValues.rating,
+        copyValues.author,
+        copyValues.comment
+      );
+      return;
+    }
+
+    console.log(values);
+
+    console.log("Hello");
+    console.log(values.rating);
+    console.log(this.state.props.dish.id);
+    //console.log("Current State: " + JSON.stringify(values))
+    //alert("Current State: " + JSON.stringify(values))
+    this.state.props.addComment(
+      this.state.props.dish.id,
+      values.rating,
+      values.author,
+      values.comment
+    );
+  }
   toggleModal() {
     this.setState({
       isModalOpen: !this.state.isModalOpen,
@@ -95,7 +129,23 @@ class DishDetail extends Component {
     console.log("Details");
     let selectedDish = this.state.props.dish;
     let displayComments = this.state.props.comments;
-    if (selectedDish != null) {
+    if (this.state.props.isLoading) {
+      return (
+        <div className="container">
+          <div className="row">
+            <Loading />
+          </div>
+        </div>
+      );
+    } else if (this.state.props.errMess) {
+      return (
+        <div className="container">
+          <div className="row">
+            <h4>{this.state.props.errMess}</h4>
+          </div>
+        </div>
+      );
+    } else if (selectedDish != null) {
       return (
         <div className="container">
           <div className="row">
@@ -118,17 +168,20 @@ class DishDetail extends Component {
               <RenderComments
                 comments={displayComments}
                 toggleModal={this.toggleModal}
+                addComment={this.state.props.addComment}
+                dishId={this.state.props.dish.id}
               />
             </div>
           </div>
           <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
             <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
             <ModalBody>
-              <LocalForm onSubmit={this.handleLogin}>
+              <LocalForm onSubmit={(values) => this.handleLogin(values)}>
                 <Row className="form-group">
                   <Label htmlFor="rating">Rating</Label>
                   <Control.select
                     model=".rating"
+                    id="rating"
                     name="rating"
                     className="form-control"
                     // innerRef={(input) => (this.username = input)}
