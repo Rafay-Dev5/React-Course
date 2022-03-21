@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
 import { Loading } from "./LoadingComponent";
+import { baseUrl } from "../shared/baseUrl";
 
 function CommentForm(props) {
   return (
@@ -31,7 +32,7 @@ function RenderDish({ dish }) {
   console.log("Dish");
   return (
     <Card>
-      <CardImg width="100%" src={dish.image} alt={dish.name} />
+      <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
       <CardBody>
         <CardTitle>{dish.name}</CardTitle>
         <CardText>{dish.description}</CardText>
@@ -40,7 +41,7 @@ function RenderDish({ dish }) {
   );
 }
 
-function RenderComments({ comments, toggleModal, addComment, dishId }) {
+function RenderComments({ comments, toggleModal, postComment, dishId }) {
   console.log("Comments");
   if (comments != null) {
     return (
@@ -66,7 +67,7 @@ function RenderComments({ comments, toggleModal, addComment, dishId }) {
         <CommentForm
           toggleModal={toggleModal}
           dishId={dishId}
-          addComment={addComment}
+          postComment={postComment}
         />
       </div>
     );
@@ -96,7 +97,7 @@ class DishDetail extends Component {
     if (!values.rating) {
       const copyValues = Object.create(values);
       //Copy
-      this.state.props.addComment(
+      this.state.props.postComment(
         this.state.props.dish.id,
         copyValues.rating,
         copyValues.author,
@@ -112,7 +113,7 @@ class DishDetail extends Component {
     console.log(this.state.props.dish.id);
     //console.log("Current State: " + JSON.stringify(values))
     //alert("Current State: " + JSON.stringify(values))
-    this.state.props.addComment(
+    this.state.props.postComment(
       this.state.props.dish.id,
       values.rating,
       values.author,
@@ -168,7 +169,7 @@ class DishDetail extends Component {
               <RenderComments
                 comments={displayComments}
                 toggleModal={this.toggleModal}
-                addComment={this.state.props.addComment}
+                postComment={this.state.props.postComment}
                 dishId={this.state.props.dish.id}
               />
             </div>

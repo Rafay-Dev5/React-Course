@@ -11,7 +11,12 @@ import { Routes, Route, Navigate, useParams } from "react-router-dom";
 //import "./App.css";
 import { withRouter } from "../redux/withRouter";
 import { connect } from "react-redux";
-import { addComment, fetchDishes } from "../redux/ActionCreators";
+import {
+  postComment,
+  fetchComments,
+  fetchDishes,
+  fetchPromos,
+} from "../redux/ActionCreators";
 import { actions } from "react-redux-form";
 
 const mapStateToProps = (state) => {
@@ -24,13 +29,19 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  addComment: (dishId, rating, author, comment) =>
-    dispatch(addComment(dishId, rating, author, comment)),
+  postComment: (dishId, rating, author, comment) =>
+    dispatch(postComment(dishId, rating, author, comment)),
   fetchDishes: () => {
     dispatch(fetchDishes());
   },
   resetFeedbackForm: () => {
     dispatch(actions.reset("feedback"));
+  },
+  fetchComments: () => {
+    dispatch(fetchComments());
+  },
+  fetchPromos: () => {
+    dispatch(fetchPromos());
   },
 });
 
@@ -44,6 +55,8 @@ class Main extends Component {
 
   componentDidMount() {
     this.props.fetchDishes();
+    this.props.fetchComments();
+    this.props.fetchPromos();
     console.log("Fetching: " + this.state.props.fetchDishes());
     console.log("Dishes Array: " + this.state.props.dishes);
     console.log(this.state);
@@ -68,8 +81,12 @@ class Main extends Component {
           dishesLoading={this.props.dishes.isLoading}
           dishesErrMess={this.props.dishes.errMess}
           promotion={
-            this.props.promotions.filter((promo) => promo.featured === true)[0]
+            this.props.promotions.promotions.filter(
+              (promo) => promo.featured === true
+            )[0]
           }
+          promosLoading={this.props.promotions.isLoading}
+          promosErrMess={this.props.promotions.errMess}
           leader={
             this.props.leaders.filter((leader) => leader.featured === true)[0]
           }
@@ -89,10 +106,11 @@ class Main extends Component {
           }
           isLoading={this.props.dishes.isLoading}
           errMess={this.props.dishes.errMess}
-          comments={this.props.comments.filter(
+          comments={this.props.comments.comments.filter(
             (comment) => comment.dishId === parseInt(dishId)
           )}
-          addComment={this.props.addComment}
+          postComment={this.props.postComment}
+          commentsErrMess={this.props.comments.errMess}
         />
       );
     };
